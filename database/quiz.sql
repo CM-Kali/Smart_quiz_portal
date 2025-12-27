@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS results (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 INSERT INTO questions (question, option1, option2, option3, option4, correct_answer) VALUES
 ('What does HTML stand for?', 
  'Hyper Text Markup Language', 

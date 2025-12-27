@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Result</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Quiz Result</h1>
+    <h2 id="username"></h2>
+    <h3>Your Score: <span id="score"></span></h3>
+
+    <a href="index.html">
+        <button>Take Quiz Again</button>
+    </a>
+</div>
+
+<script>
+    document.getElementById("username").innerText =
+        "Name: " + localStorage.getItem("username");
+
+    document.getElementById("score").innerText =
+        localStorage.getItem("score");
+</script>
+
+</body>
+</html>
