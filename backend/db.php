@@ -1,12 +1,14 @@
 <?php
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "quiz_app";
+$servername = "localhost";
+$username = "root";
+$password = ""; // default XAMPP password
+$dbname = "quiz_app";
 
-$conn = new mysqli($host, $user, $password, $database);
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
 
+// Check connection
 if ($conn->connect_error) {
-    die("Database Connection Failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
