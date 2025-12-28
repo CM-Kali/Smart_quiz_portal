@@ -3,48 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Quiz</title>
+<title>Smart Quiz - Splash</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #00c6ff, #0072ff);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    flex-direction: column;
-  }
-  h1 {
-    font-size: 3rem;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-  }
-  button {
-    padding: 15px 30px;
-    margin-top: 30px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    transition: 0.3s;
-  }
-  button:hover {
-    background: rgba(255,255,255,0.4);
-  }
+    body { display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; background:#0f9fff; color:#fff; font-family:sans-serif;}
+    h1 { font-size:3em; margin-bottom:30px; text-shadow: 2px 2px 5px #000;}
+    #startBtn { padding:15px 30px; font-size:1.2em; cursor:pointer; background:#fff; color:#0f9fff; border:none; border-radius:10px; transition:0.3s;}
+    #startBtn:hover { background:#e0e0e0; }
 </style>
 </head>
 <body>
-  <h1>Smart Quiz</h1>
-  <button onclick="goDashboard()">Start Quiz</button>
+<h1>Smart Quiz</h1>
+<button id="startBtn">Start Quiz</button>
 
 <script>
-function goDashboard() {
-  window.location.href = "dashboard.html";
-}
+document.getElementById('startBtn').addEventListener('click', () => {
+    window.location.href = 'dashboard.html';
+});
 </script>
 </body>
 </html>

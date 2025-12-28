@@ -1,18 +1,17 @@
 <?php
-header("Content-Type: application/json");
-include "db.php";
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *"); 
 
-$sql = "SELECT * FROM results ORDER BY created_at DESC";
-$result = $conn->query($sql);
+include 'db.php';
+
+$stmt = $conn->prepare("SELECT * FROM results ORDER BY created_at DESC");
+$stmt->execute();
+$result = $stmt->get_result();
 
 $results = [];
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()){
-        $results[] = $row;
-    }
+while($row = $result->fetch_assoc()){
+    $results[] = $row;
 }
 
 echo json_encode($results);
-
-$conn->close();
 ?>

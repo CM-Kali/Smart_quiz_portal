@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose Level</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body { font-family:sans-serif; background:#f0f8ff; margin:0; padding:30px; display:flex; flex-direction:column; align-items:center;}
+h2 { margin-bottom:30px; color:#0f9fff; text-shadow:1px 1px 3px #aaa;}
+.level-container { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+.level-btn { padding:20px 40px; font-size:1.2em; border:none; border-radius:12px; background:#0f9fff; color:#fff; cursor:pointer; transition:0.3s; box-shadow: 2px 2px 8px #aaa; }
+.level-btn:hover { background:#0b7ac5; transform:scale(1.05); }
+</style>
+</head>
+<body>
+
+<h2 id="subjectTitle">Select Level</h2>
+
+<div class="level-container">
+    <button class="level-btn" data-level="Easy">Easy</button>
+    <button class="level-btn" data-level="Intermediate">Intermediate</button>
+    <button class="level-btn" data-level="Pro">Pro</button>
+</div>
+
+<script src="js/levels.js"></script>
+
+</body>
+</html>

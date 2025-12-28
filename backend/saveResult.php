@@ -1,35 +1,32 @@
 <?php
-header("Content-Type: application/json");
-include "db.php";
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *"); 
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
-// Get POST data
+include 'db.php';
+
+// Get raw POST data
 $data = json_decode(file_get_contents("php://input"), true);
 
-$username = $data['username'] ?? '';
-$subject = $data['subject'] ?? '';
-$level = $data['level'] ?? '';
-$total_questions = $data['total_questions'] ?? 0;
-$correct_answers = $data['correct_answers'] ?? 0;
-$score = $data['score'] ?? 0;
-
-if(empty($username) || empty($subject) || empty($level)){
-    echo json_encode(["status" => "error", "message" => "Missing required fields"]);
+if(!$data || !isset($data['username'],$data['subject'],$data['level'],$data['total_questions'],$data['correct_answers'],$data['score'])){
+    echo json_encode(['status'=>'error','message'=>'Invalid data']);
     exit;
 }
 
-$stmt = $conn->prepare(
-    "INSERT INTO results (username, subject, level, total_questions, correct_answers, score) 
-     VALUES (?, ?, ?, ?, ?, ?)"
-);
+$username = $data['username'];
+$subject  = $data['subject'];
+$level    = $data['level'];
+$total_questions = (int)$data['total_questions'];
+$correct_answers = (int)$data['correct_answers'];
+$score = (int)$data['score'];
+
+$stmt = $conn->prepare("INSERT INTO results (username, subject, level, total_questions, correct_answers, score) VALUES (?,?,?,?,?,?)");
 $stmt->bind_param("sssiii", $username, $subject, $level, $total_questions, $correct_answers, $score);
-$stmt->execute();
 
-if($stmt->affected_rows > 0){
-    echo json_encode(["status" => "success", "message" => "Result saved successfully"]);
+if($stmt->execute()){
+    echo json_encode(['status'=>'success','message'=>'Result saved']);
 }else{
-    echo json_encode(["status" => "error", "message" => "Failed to save result"]);
+    echo json_encode(['status'=>'error','message'=>'Database error: '.$stmt->error]);
 }
-
-$stmt->close();
-$conn->close();
 ?>

@@ -1,19 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Quiz</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+#quizContainer {
+    width: 100%;
+    max-width: 700px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 25px;
+}
+h2 {
+    text-align: center;
+    color: #0f9fff;
+    margin-bottom: 20px;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    margin: 12px 0;
+}
+button.option-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background: #0f9fff;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+button.option-btn:hover {
+    background: #0b7ac5;
+}
+button.correct {
+    background: #28a745 !important;
+}
+button.wrong {
+    background: #dc3545 !important;
+}
+#nextBtn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #0f9fff;
+    color: #fff;
+    display: none;
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h2 id="welcome"></h2>
-    <div id="timer">Time Left: <span id="time">60</span> sec</div>
-
-    <div id="quiz-box"></div>
-
-    <button onclick="submitQuiz()">Submit Quiz</button>
+<div id="quizContainer">
+    <h2 id="questionTitle">Loading...</h2>
+    <ul id="optionsList"></ul>
+    <button id="nextBtn">Next Question</button>
 </div>
 
 <script src="js/quiz.js"></script>

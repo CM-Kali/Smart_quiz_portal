@@ -1,77 +1,108 @@
-// Parse URL parameters
-const params = new URLSearchParams(window.location.search);
-const subject = params.get("subject");
-const level = params.get("level");
+document.addEventListener('DOMContentLoaded', () => {
+    const username = localStorage.getItem('quizUsername');
+    const subject = localStorage.getItem('quizSubject');
+    const level = localStorage.getItem('quizLevel');
 
-let questions = [];
-let currentIndex = 0;
-let correctCount = 0;
+    if(!username || !subject || !level){
+        alert('Missing quiz info. Redirecting to Dashboard.');
+        window.location.href = 'dashboard.html';
+        return;
+    }
 
-const questionTitle = document.getElementById("questionTitle");
-const optionsBox = document.getElementById("optionsBox");
-const nextBtn = document.getElementById("nextBtn");
+    const questionTitle = document.getElementById('questionTitle');
+    const optionsList = document.getElementById('optionsList');
+    const nextBtn = document.getElementById('nextBtn');
 
-fetch(`http://localhost/quiz-app/backend/getQuestions.php?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`)
-  .then(res => res.json())
-  .then(data => {
-    questions = data;
-    showQuestion();
-  })
-  .catch(err => console.error("Error fetching questions:", err));
+    let questions = [];
+    let currentIndex = 0;
+    let correctAnswers = 0;
 
-function showQuestion() {
-  if(currentIndex >= questions.length) {
-    saveResult();
-    return;
-  }
-  const q = questions[currentIndex];
-  questionTitle.textContent = `Q${currentIndex + 1}. ${q.question}`;
-  optionsBox.innerHTML = "";
-
-  ["option1","option2","option3","option4"].forEach(opt => {
-    const btn = document.createElement("div");
-    btn.classList.add("option");
-    btn.textContent = q[opt];
-    btn.onclick = () => checkAnswer(q.correct_answer, btn);
-    optionsBox.appendChild(btn);
-  });
-}
-
-function checkAnswer(correct, btn) {
-  const allOptions = document.querySelectorAll(".option");
-  allOptions.forEach(o => o.onclick = null); // disable all
-  if(btn.textContent === correct){
-    btn.classList.add("correct");
-    correctCount++;
-  } else {
-    btn.classList.add("wrong");
-    allOptions.forEach(o => { if(o.textContent === correct) o.classList.add("correct"); });
-  }
-  nextBtn.style.display = "block";
-}
-
-nextBtn.addEventListener("click", () => {
-  currentIndex++;
-  nextBtn.style.display = "none";
-  showQuestion();
-});
-
-function saveResult() {
-  const total = questions.length;
-  fetch('http://localhost/quiz-app/backend/saveResult.php', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({
-      username: "Test User",
-      subject: subject,
-      level: level,
-      total_questions: total,
-      correct_answers: correctCount,
-      score: Math.round((correctCount/total)*100)
+    // Fetch questions from backend
+    fetch(`http://localhost/quiz-app/backend/getQuestions.php?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`)
+    .then(res => res.json())
+    .then(data => {
+        questions = data;
+        if(!questions || questions.length === 0){
+            alert('No questions available for this level.');
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        showQuestion();
     })
-  })
-  .then(() => {
-    window.location.href = `result.html?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`;
-  })
-  .catch(err => console.error(err));
-}
+    .catch(err => {
+        console.error(err);
+        alert('Error loading questions.');
+        window.location.href = 'dashboard.html';
+    });
+
+    function showQuestion(){
+        nextBtn.style.display = 'none';
+        const q = questions[currentIndex];
+        questionTitle.textContent = `Q${currentIndex + 1}: ${q.question}`;
+        optionsList.innerHTML = '';
+
+        ['option1','option2','option3','option4'].forEach(opt => {
+            const li = document.createElement('li');
+            const btn = document.createElement('button');
+            btn.classList.add('option-btn');
+            btn.textContent = q[opt];
+            btn.addEventListener('click', () => selectAnswer(btn, q.correct_answer));
+            li.appendChild(btn);
+            optionsList.appendChild(li);
+        });
+    }
+
+    function selectAnswer(btn, correctAnswer){
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(b => b.disabled = true);
+
+        if(btn.textContent === correctAnswer){
+            btn.classList.add('correct');
+            correctAnswers++;
+        } else {
+            btn.classList.add('wrong');
+            // Highlight correct answer
+            allBtns.forEach(b => {
+                if(b.textContent === correctAnswer) b.classList.add('correct');
+            });
+        }
+
+        nextBtn.style.display = 'block';
+    }
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex++;
+        if(currentIndex >= questions.length){
+            saveResult();
+        } else {
+            showQuestion();
+        }
+    });
+
+    function saveResult(){
+        const totalQuestions = questions.length;
+        const score = Math.round((correctAnswers / totalQuestions) * 100);
+
+        fetch('http://localhost/quiz-app/backend/saveResult.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username,
+                subject,
+                level,
+                total_questions: totalQuestions,
+                correct_answers: correctAnswers,
+                score
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Result saved:', data);
+            window.location.href = 'result.html';
+        })
+        .catch(err => {
+            console.error('Error saving result:', err);
+            alert('Error saving result. Try again.');
+        });
+    }
+});

@@ -1,51 +1,31 @@
-// Parse URL params
-const params = new URLSearchParams(window.location.search);
-const subject = params.get("subject");
-const level = params.get("level");
+document.addEventListener('DOMContentLoaded', () => {
+    const tbody = document.querySelector('#resultsTable tbody');
 
-const scoreText = document.getElementById("scoreText");
-const ctx = document.getElementById("scoreChart").getContext('2d');
-const allResultsDiv = document.getElementById("allResults");
-
-// Fetch last user result
-fetch('http://localhost/quiz-app/backend/getResults.php')
-  .then(res => res.json())
-  .then(results => {
-    // Filter for current user/subject/level (here we use Test User)
-    const userResult = results.find(r => r.username === "Test User" && r.subject === subject && r.level === level);
-
-    if(userResult){
-      const correct = userResult.correct_answers;
-      const total = userResult.total_questions;
-      const score = userResult.score;
-
-      scoreText.innerHTML = `Score: ${score}% (${correct}/${total} correct)`;
-
-      // Chart.js - Pie chart
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Correct', 'Incorrect'],
-          datasets: [{
-            data: [correct, total-correct],
-            backgroundColor: ['#28a745','#dc3545']
-          }]
-        },
-        options: {
-          responsive: true
+    fetch('http://localhost/quiz-app/backend/getAllResults.php')
+    .then(res => res.json())
+    .then(data => {
+        tbody.innerHTML = ''; // clear loading row
+        if(!data || data.length === 0){
+            tbody.innerHTML = '<tr><td colspan="7">No results found</td></tr>';
+            return;
         }
-      });
-    } else {
-      scoreText.textContent = "Result not found!";
-    }
 
-    // Show all users results
-    allResultsDiv.innerHTML = "";
-    results.forEach(r => {
-      const row = document.createElement('div');
-      row.classList.add('result-row');
-      row.textContent = `${r.username} - ${r.subject} - ${r.level} - Score: ${r.score}% (${r.correct_answers}/${r.total_questions})`;
-      allResultsDiv.appendChild(row);
+        data.forEach(result => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${result.username}</td>
+                <td>${result.subject}</td>
+                <td>${result.level}</td>
+                <td>${result.total_questions}</td>
+                <td>${result.correct_answers}</td>
+                <td>${result.score}%</td>
+                <td>${result.created_at}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    })
+    .catch(err => {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan="7">Error loading results</td></tr>';
     });
-  })
-  .catch(err => console.error(err));
+});
