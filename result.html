@@ -1,29 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Result</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Result - Smart Quiz</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f0f2f5;
+}
+h2 {
+  text-align: center;
+  color: #333;
+}
+#scoreBox {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+  text-align: center;
+}
+#allResults {
+  margin-top: 30px;
+}
+.result-row {
+  background: #0072ff;
+  color: #fff;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Quiz Result</h1>
-    <h2 id="username"></h2>
-    <h3>Your Score: <span id="score"></span></h3>
-
-    <a href="index.html">
-        <button>Take Quiz Again</button>
-    </a>
+<h2>Your Quiz Result</h2>
+<div id="scoreBox">
+  <p id="scoreText">Loading...</p>
+  <canvas id="scoreChart" width="200" height="200"></canvas>
 </div>
 
-<script>
-    document.getElementById("username").innerText =
-        "Name: " + localStorage.getItem("username");
+<h2>All Users Results</h2>
+<div id="allResults"></div>
 
-    document.getElementById("score").innerText =
-        localStorage.getItem("score");
-</script>
-
+<script src="js/result.js"></script>
 </body>
 </html>

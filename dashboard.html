@@ -5,14 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - Smart Quiz</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f0f2f5;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  .subject-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+  }
+  .subject-card {
+    background: #0072ff;
+    color: #fff;
+    padding: 20px 30px;
+    border-radius: 10px;
+    cursor: pointer;
+    min-width: 150px;
+    text-align: center;
+    transition: 0.3s;
+  }
+  .subject-card:hover {
+    background: #00c6ff;
+  }
+  .level-list {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .level-card {
+    background: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .level-card:hover {
+    background: #218838;
+  }
+</style>
 </head>
 <body>
-  <h1>Welcome to Smart Quiz Dashboard</h1>
-  <button onclick="startQuiz()">Start Quiz</button>
+  <h1>Select a Subject</h1>
+  <div class="subject-list" id="subjectList"></div>
+  <div class="level-list" id="levelList" style="display:none;"></div>
 
 <script>
-function startQuiz() {
-  window.location.href = "quiz.html";
+const subjectList = document.getElementById("subjectList");
+const levelList = document.getElementById("levelList");
+
+fetch('http://localhost/quiz-app/backend/getSubjects.php')
+  .then(res => res.json())
+  .then(subjects => {
+    subjects.forEach(subject => {
+      const card = document.createElement('div');
+      card.classList.add('subject-card');
+      card.textContent = subject;
+      card.onclick = () => selectSubject(subject);
+      subjectList.appendChild(card);
+    });
+  })
+  .catch(err => console.error("Error fetching subjects:", err));
+
+let selectedSubject = "";
+
+function selectSubject(subject) {
+  selectedSubject = subject;
+  levelList.style.display = "flex";
+  levelList.innerHTML = ""; // clear previous
+  const levels = ["Easy", "Intermediate", "Pro"];
+  levels.forEach(level => {
+    const levelCard = document.createElement('div');
+    levelCard.classList.add('level-card');
+    levelCard.textContent = level;
+    levelCard.onclick = () => startQuiz(subject, level);
+    levelList.appendChild(levelCard);
+  });
+}
+
+function startQuiz(subject, level) {
+  // Pass subject and level as query params
+  window.location.href = `quiz.html?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`;
 }
 </script>
 </body>

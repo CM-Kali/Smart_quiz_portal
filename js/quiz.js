@@ -1,103 +1,77 @@
-let questions = [];
-let score = 0;
-let timeLeft = 60;
-let timer;
-
-// Get username from URL
+// Parse URL parameters
 const params = new URLSearchParams(window.location.search);
-const username = params.get("username");
+const subject = params.get("subject");
+const level = params.get("level");
 
-// Save username for later use
-localStorage.setItem("username", username);
+let questions = [];
+let currentIndex = 0;
+let correctCount = 0;
 
-// Show welcome message
-document.getElementById("welcome").innerText = 
-    "Welcome, " + username;
+const questionTitle = document.getElementById("questionTitle");
+const optionsBox = document.getElementById("optionsBox");
+const nextBtn = document.getElementById("nextBtn");
 
-// Fetch questions from backend
-fetch("backend/getQuestions.php")
-    .then(response => response.json())
-    .then(data => {
-        questions = data;
-        displayQuestions();
-        startTimer();
-    });
+fetch(`http://localhost/quiz-app/backend/getQuestions.php?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`)
+  .then(res => res.json())
+  .then(data => {
+    questions = data;
+    showQuestion();
+  })
+  .catch(err => console.error("Error fetching questions:", err));
 
-// Display questions
-function displayQuestions() {
-    const quizBox = document.getElementById("quiz-box");
-    quizBox.innerHTML = "";
+function showQuestion() {
+  if(currentIndex >= questions.length) {
+    saveResult();
+    return;
+  }
+  const q = questions[currentIndex];
+  questionTitle.textContent = `Q${currentIndex + 1}. ${q.question}`;
+  optionsBox.innerHTML = "";
 
-    questions.forEach((q, index) => {
-        quizBox.innerHTML += `
-            <div class="question">
-                <p><strong>Q${index + 1}:</strong> ${q.question}</p>
-
-                <label>
-                    <input type="radio" name="q${index}" value="${q.option1}">
-                    ${q.option1}
-                </label><br>
-
-                <label>
-                    <input type="radio" name="q${index}" value="${q.option2}">
-                    ${q.option2}
-                </label><br>
-
-                <label>
-                    <input type="radio" name="q${index}" value="${q.option3}">
-                    ${q.option3}
-                </label><br>
-
-                <label>
-                    <input type="radio" name="q${index}" value="${q.option4}">
-                    ${q.option4}
-                </label>
-            </div><hr>
-        `;
-    });
+  ["option1","option2","option3","option4"].forEach(opt => {
+    const btn = document.createElement("div");
+    btn.classList.add("option");
+    btn.textContent = q[opt];
+    btn.onclick = () => checkAnswer(q.correct_answer, btn);
+    optionsBox.appendChild(btn);
+  });
 }
 
-// Timer logic
-function startTimer() {
-    timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("time").innerText = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            submitQuiz();
-        }
-    }, 1000);
+function checkAnswer(correct, btn) {
+  const allOptions = document.querySelectorAll(".option");
+  allOptions.forEach(o => o.onclick = null); // disable all
+  if(btn.textContent === correct){
+    btn.classList.add("correct");
+    correctCount++;
+  } else {
+    btn.classList.add("wrong");
+    allOptions.forEach(o => { if(o.textContent === correct) o.classList.add("correct"); });
+  }
+  nextBtn.style.display = "block";
 }
 
-// Submit quiz
-function submitQuiz() {
-    clearInterval(timer);
-    score = 0;
+nextBtn.addEventListener("click", () => {
+  currentIndex++;
+  nextBtn.style.display = "none";
+  showQuestion();
+});
 
-    questions.forEach((q, index) => {
-        const selected = document.querySelector(
-            `input[name="q${index}"]:checked`
-        );
-
-        if (selected && selected.value === q.correct_answer) {
-            score++;
-        }
-    });
-
-    // Save score locally
-    localStorage.setItem("score", score);
-
-    // Send result to backend
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("score", score);
-
-    fetch("backend/saveResult.php", {
-        method: "POST",
-        body: formData
-    });
-
-    // Redirect to result page
-    window.location.href = "result.html";
+function saveResult() {
+  const total = questions.length;
+  fetch('http://localhost/quiz-app/backend/saveResult.php', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      username: "Test User",
+      subject: subject,
+      level: level,
+      total_questions: total,
+      correct_answers: correctCount,
+      score: Math.round((correctCount/total)*100)
+    })
+  })
+  .then(() => {
+    window.location.href = `result.html?subject=${encodeURIComponent(subject)}&level=${encodeURIComponent(level)}`;
+  })
+  .catch(err => console.error(err));
 }
