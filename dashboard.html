@@ -3,26 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
+<title>Quiz Dashboard</title>
 
 <style>
 body {
     font-family: Arial, sans-serif;
     background: #f0f8ff;
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 
-h1 {
-    color: #0f9fff;
-    text-align: center;
-    margin-bottom: 30px;
+/* CENTER SCREEN */
+.center-screen {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* NAME BOX */
 #nameBox {
+    background: #fff;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     text-align: center;
-    margin-top: 100px;
+}
+
+#nameBox h2 {
+    color: #0f9fff;
+    margin-bottom: 15px;
 }
 
 #nameBox input {
@@ -49,6 +59,17 @@ h1 {
 }
 
 /* DASHBOARD */
+#dashboard {
+    display: none;
+    padding: 30px;
+}
+
+#welcomeText {
+    text-align: center;
+    color: #0f9fff;
+    margin-bottom: 30px;
+}
+
 .dashboard-container {
     display: flex;
     justify-content: center;
@@ -63,11 +84,6 @@ h1 {
     width: 220px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
 }
 
 .card button {
@@ -88,77 +104,52 @@ h1 {
 
 <body>
 
-<h1 id="welcomeText" style="display:none;">
-    Welcome, <span id="usernameDisplay"></span>
-</h1>
-
-<!-- NAME INPUT -->
-<div id="nameBox">
-    <h2>Enter Your Name</h2>
-    <input type="text" id="usernameInput" placeholder="Your name">
-    <br>
-    <button id="continueBtn">Continue</button>
+<!-- NAME INPUT (ALWAYS FIRST) -->
+<div class="center-screen" id="nameScreen">
+    <div id="nameBox">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="usernameInput" placeholder="Your name">
+        <br>
+        <button onclick="continueToDashboard()">Continue</button>
+    </div>
 </div>
 
 <!-- DASHBOARD -->
-<div class="dashboard-container" id="dashboardContent" style="display:none;">
-    <div class="card">
-        <h3>Start Quiz</h3>
-        <p>Choose subject and level</p>
-        <button id="startQuizBtn">Go to Quiz</button>
-    </div>
+<div id="dashboard">
+    <h1 id="welcomeText">
+        Welcome, <span id="usernameDisplay"></span>
+    </h1>
 
-    <div class="card">
-        <h3>All Results</h3>
-        <p>View quiz results</p>
-        <button onclick="window.location.href='all-results.html'">
-            View Results
-        </button>
+    <div class="dashboard-container">
+        <div class="card">
+            <h3>Start Quiz</h3>
+            <p>Choose subject and level</p>
+            <button onclick="location.href='subjects.html'">Go to Quiz</button>
+        </div>
+
+        <div class="card">
+            <h3>All Results</h3>
+            <p>View quiz results</p>
+            <button onclick="location.href='all-results.html'">View Results</button>
+        </div>
     </div>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const storedName = localStorage.getItem("quizUsername");
-
-    if (storedName && storedName.trim() !== "") {
-        showDashboard(storedName);
-    }
-});
-
-/* SAVE NAME */
-document.getElementById("continueBtn").addEventListener("click", () => {
-    const nameInput = document.getElementById("usernameInput");
-    const name = nameInput.value.trim();
+function continueToDashboard() {
+    const input = document.getElementById("usernameInput");
+    const name = input.value.trim();
 
     if (name === "") {
-        alert("Name is required to continue!");
-        nameInput.focus();
+        alert("Please enter your name");
+        input.focus();
         return;
     }
 
     localStorage.setItem("quizUsername", name);
-    showDashboard(name);
-});
 
-/* START QUIZ */
-document.getElementById("startQuizBtn").addEventListener("click", () => {
-    const name = localStorage.getItem("quizUsername");
-
-    if (!name) {
-        alert("Please enter your name first!");
-        location.reload();
-        return;
-    }
-
-    window.location.href = "subjects.html";
-});
-
-/* SHOW DASHBOARD */
-function showDashboard(name) {
-    document.getElementById("nameBox").style.display = "none";
-    document.getElementById("dashboardContent").style.display = "flex";
-    document.getElementById("welcomeText").style.display = "block";
+    document.getElementById("nameScreen").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
     document.getElementById("usernameDisplay").innerText = name;
 }
 </script>
