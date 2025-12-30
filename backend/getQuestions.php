@@ -17,14 +17,12 @@ $stmt = $conn->prepare(
      ORDER BY RAND()
      LIMIT 10"
 );
-
 $stmt->bind_param("ss", $subject, $level);
 $stmt->execute();
-
 $result = $stmt->get_result();
-$questions = [];
 
-while ($row = $result->fetch_assoc()) {
+$questions = [];
+while($row = $result->fetch_assoc()){
     $questions[] = $row;
 }
 

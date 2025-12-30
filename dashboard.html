@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard</title>
-<link rel="stylesheet" href="css/dashboard.css">
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -12,13 +12,48 @@ body {
     margin: 0;
     padding: 20px;
 }
-h1 { color: #0f9fff; text-align: center; margin-bottom: 30px; }
 
+h1 {
+    color: #0f9fff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* NAME BOX */
+#nameBox {
+    text-align: center;
+    margin-top: 100px;
+}
+
+#nameBox input {
+    padding: 12px;
+    width: 260px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+#nameBox button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background: #0f9fff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#nameBox button:hover {
+    background: #0b7ac5;
+}
+
+/* DASHBOARD */
 .dashboard-container {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .card {
@@ -28,12 +63,11 @@ h1 { color: #0f9fff; text-align: center; margin-bottom: 30px; }
     width: 220px;
     text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: 0.3s;
 }
+
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
 .card button {
@@ -43,40 +77,90 @@ h1 { color: #0f9fff; text-align: center; margin-bottom: 30px; }
     border-radius: 8px;
     background: #0f9fff;
     color: #fff;
-    font-weight: bold;
     cursor: pointer;
 }
-.card button:hover { background:#0b7ac5; }
+
+.card button:hover {
+    background: #0b7ac5;
+}
 </style>
 </head>
+
 <body>
 
-<h1>Welcome, <span id="usernameDisplay"></span></h1>
+<h1 id="welcomeText" style="display:none;">
+    Welcome, <span id="usernameDisplay"></span>
+</h1>
 
-<div class="dashboard-container">
+<!-- NAME INPUT -->
+<div id="nameBox">
+    <h2>Enter Your Name</h2>
+    <input type="text" id="usernameInput" placeholder="Your name">
+    <br>
+    <button id="continueBtn">Continue</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard-container" id="dashboardContent" style="display:none;">
     <div class="card">
         <h3>Start Quiz</h3>
-        <p>Choose subject and level to start quiz</p>
-        <button onclick="window.location.href='subjects.html'">Go to Quiz</button>
+        <p>Choose subject and level</p>
+        <button id="startQuizBtn">Go to Quiz</button>
     </div>
 
     <div class="card">
         <h3>All Results</h3>
-        <p>View results of all users</p>
-        <button onclick="window.location.href='all-results.html'">View Results</button>
+        <p>View quiz results</p>
+        <button onclick="window.location.href='all-results.html'">
+            View Results
+        </button>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const username = localStorage.getItem('quizUsername');
-    if(!username){
-        alert('Please enter your name.');
-        window.location.href = 'index.html';
+    const storedName = localStorage.getItem("quizUsername");
+
+    if (storedName && storedName.trim() !== "") {
+        showDashboard(storedName);
+    }
+});
+
+/* SAVE NAME */
+document.getElementById("continueBtn").addEventListener("click", () => {
+    const nameInput = document.getElementById("usernameInput");
+    const name = nameInput.value.trim();
+
+    if (name === "") {
+        alert("Name is required to continue!");
+        nameInput.focus();
         return;
     }
-    document.getElementById('usernameDisplay').textContent = username;
+
+    localStorage.setItem("quizUsername", name);
+    showDashboard(name);
 });
+
+/* START QUIZ */
+document.getElementById("startQuizBtn").addEventListener("click", () => {
+    const name = localStorage.getItem("quizUsername");
+
+    if (!name) {
+        alert("Please enter your name first!");
+        location.reload();
+        return;
+    }
+
+    window.location.href = "subjects.html";
+});
+
+/* SHOW DASHBOARD */
+function showDashboard(name) {
+    document.getElementById("nameBox").style.display = "none";
+    document.getElementById("dashboardContent").style.display = "flex";
+    document.getElementById("welcomeText").style.display = "block";
+    document.getElementById("usernameDisplay").innerText = name;
+}
 </script>
 
 </body>
